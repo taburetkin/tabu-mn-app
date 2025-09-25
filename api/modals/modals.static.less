@@ -1,0 +1,103 @@
+.modal-container {
+	&.modal-default {
+
+
+		#tabu-modals.default-colorless();
+	
+
+	
+
+	
+		.modal-box {
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+			flex-shrink: 1;
+			overflow: hidden;
+			.mobile & {
+				width: 100%;
+			}
+	
+			> header {
+				flex-grow: 0;
+				flex-shrink: 0;
+
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+	
+				> .modal-header-text, > .elastic {
+					flex-grow: 1;
+					flex-shrink: 1;
+					overflow: hidden;
+				}
+				> .modal-header-text {
+					padding: var(--gutter-half) var(--gutter);
+				}				
+
+
+				> button, > .fixed {
+					flex-grow: 0;
+					flex-shrink: 0;
+				}			
+	
+			}
+
+		}
+	
+		.modal-content {
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+			flex-shrink: 1;
+			overflow: auto;
+			> :first-child {
+				display: flex;
+				flex-direction: column;
+				flex-grow: 1;
+				flex-shrink: 1;
+				overflow: auto;
+				> footer {
+					display: flex;
+					flex-direction: row;
+					column-gap: var(--modal-footer-button-space);
+					row-gap: var(--modal-footer-button-space);
+					padding: var(--gutter);
+				}
+			}
+		}
+	
+		.modal-message-text {
+			padding: var(--gutter) var(--gutter);
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+		}
+	
+	}
+
+
+	&.modal-page-info {
+		#tabu-modals.default-colorless();
+		#tabu-modals.with-modal-box();
+
+		.modal-wrapper {
+			position: relative;
+			z-index: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+	
+			.mobile & {
+				padding: 0;
+			}
+
+		}
+
+		.modal-box {
+			
+		}
+
+	}
+
+}

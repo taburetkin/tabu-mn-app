@@ -1,0 +1,1 @@
+export { flatObject, isPrimitive } from './flatObject.js';

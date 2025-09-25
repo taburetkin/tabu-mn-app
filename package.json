@@ -1,0 +1,18 @@
+{
+  "name": "tabu-mn-app",
+  "version": "1.0.0",
+  "description": "frontend marionette application boilerplate",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "frontend",
+    "app",
+    "application",
+    "marionette",
+    "backbone"
+  ],
+  "author": "dimtabu <dima.taburetkin@gmail.com>",
+  "license": "ISC"
+}

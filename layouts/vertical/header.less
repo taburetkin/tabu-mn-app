@@ -1,0 +1,42 @@
+
+#app > header {
+
+
+	font-family: var(--app-header-font);
+
+	.header-container {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+
+	.header-text {
+
+		padding: var(--gutter-half);
+		flex-grow: 1;
+		flex-shrink: 1;
+	}
+
+	.subpages {
+		display: flex;
+		flex-direction: row;
+		overflow: auto;
+		flex-wrap: nowrap;
+		padding: 0 var(--gutter-half);
+		column-gap: var(--gutter-half);
+		.subpage {
+			> a {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				white-space: nowrap;
+				align-items: center;
+				column-gap: var(--gutter-quart);
+				padding: 0 var(--gutter-quart);
+				padding-bottom: var(--gutter-quart);
+			}
+		}
+	}
+
+}
