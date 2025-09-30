@@ -17,7 +17,7 @@ const TabTriggerView = View.extend({
 	className: [
 		v => v.isActive() ? 'active' : ''
 	],
-	template: `<%= iconHtml %><span class="tab-name"><%= name %></span><%= badgeHtml%>`,
+	template: `<%= iconHtml %><span class="tab-name button-text"><%= name %></span><%= badgeHtml%>`,
 	icon: v => v.model.get('icon'),
 	templateContext() {
 		return {
@@ -28,7 +28,7 @@ const TabTriggerView = View.extend({
 	getBadgeHtml() {
 		const badge = this.model.get('badge');
 		if (badge == null) return '';
-		return `<span class="badge"><span>${badge}</span></span>`;
+		return `<span class="button-badge"><span>${badge}</span></span>`;
 	},
 	isActive() {
 		return this.model === this.model.collection.active;
@@ -120,15 +120,15 @@ export const PageInfo = View.extend({
 	},
 	getTriggersModels() {
 		const models = [
-			// {name: 'tab1' },
-			// {name: 'tab2' },
-			// {name: 'tab3' },
-			// {name: 'tab4' },
-			// {name: 'tab5' },
-			// {name: 'tab6' },
-			// {name: 'tab7' },
+			{name: 'tab1' },
+			{name: 'tab2' },
+			{name: 'tab3' },
+			{name: 'tab4' },
+			{name: 'tab5' },
+			{name: 'tab6' },
+			{name: 'tab7' },
 		];
-		models.push(predefinedTabs.tree);
+		models.unshift(predefinedTabs.tree);
 		models.push(predefinedTabs.info);
 		return models;
 	},

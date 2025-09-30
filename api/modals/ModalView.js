@@ -4,7 +4,7 @@ import { View } from '../../vendors.js';
 const CloseButton = View.extend({
 	tagName: 'button',
 	className: 'app-btn modal-close',
-	template: '<span><i class="fa fa-x"></span>',
+	template: '<span class="wrapper"><i class="fa fa-x"></span>',
 	triggers: {
 		'click': 'modal:close'
 	}
@@ -42,22 +42,12 @@ const ModalHeader = View.extend({
 const ModalBox = View.extend({
 	name: 'modalBox',
 	baseClassName: 'modal-box',
-	// considerChildViewKeyAs: ['selector','name'],
-	// template: `
-	// 	<header></header>
-	// 	<section class="modal-content"></section>`,
-	templateContext() {
-
-	},
 	headerOptions() {
 		return {
 			headerText: this.getOption('headerText', true)
 		}
 	},
-	// children: {
-	// 	header: ModalHeader,
-	// 	section: v => v.getOption('content', true), //({ class: ModalContent, children: [v.getOption('content', true)] }),
-	// },
+
 	children() {
 		let views = [
 			this.getOption('content', true)

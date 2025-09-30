@@ -12,6 +12,10 @@ export {
 	asyncCall, asyncMixin,
 } from './async.js';
 
+export {
+	modals
+} from './api/index.js';
+
 export { AppObject } from './AppObject.js';
 export { App } from './App.js';
 export { Page } from './Page.js';

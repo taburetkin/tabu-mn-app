@@ -1,3 +1,4 @@
+
 .modal-container {
 	&.modal-default {
 
@@ -14,6 +15,7 @@
 			flex-grow: 1;
 			flex-shrink: 1;
 			overflow: hidden;
+
 			.mobile & {
 				width: 100%;
 			}
@@ -31,10 +33,6 @@
 					flex-shrink: 1;
 					overflow: hidden;
 				}
-				> .modal-header-text {
-					padding: var(--gutter-half) var(--gutter);
-				}				
-
 
 				> button, > .fixed {
 					flex-grow: 0;
@@ -60,15 +58,11 @@
 				> footer {
 					display: flex;
 					flex-direction: row;
-					column-gap: var(--modal-footer-button-space);
-					row-gap: var(--modal-footer-button-space);
-					padding: var(--gutter);
 				}
 			}
 		}
 	
 		.modal-message-text {
-			padding: var(--gutter) var(--gutter);
 			display: flex;
 			flex-direction: column;
 			overflow: auto;
@@ -77,27 +71,5 @@
 	}
 
 
-	&.modal-page-info {
-		#tabu-modals.default-colorless();
-		#tabu-modals.with-modal-box();
-
-		.modal-wrapper {
-			position: relative;
-			z-index: 1;
-			display: flex;
-			flex-direction: column;
-			overflow: hidden;
-	
-			.mobile & {
-				padding: 0;
-			}
-
-		}
-
-		.modal-box {
-			
-		}
-
-	}
 
 }

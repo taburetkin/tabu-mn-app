@@ -1,5 +1,6 @@
 import { View, CollectionView, request } from '../../vendors.js';
 import { AppNav } from './AppNav.js';
+import { PageInfo } from './PageInfo.js';
 
 const Child = View.extend({
 	template: '<a href="<%= href %>"><span><%= name %></span></a>',
@@ -23,6 +24,6 @@ const Children = CollectionView.extend({
 export default View.extend({
 	className: 'content',
 	children: [
-		AppNav
+		PageInfo
 	]
 });
