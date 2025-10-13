@@ -6,10 +6,11 @@ export const PageLink = View.extend({
 	template: '<a href="<%= href %>"><%= iconHtml %><span class="link-name"><%= name %></span></a>',
 	icon: v => v.model.get('icon'),
 	getName() {
-		if (!this.nameSources) {
+		const nameSources = this.getOption('nameSources', true);
+		if (!nameSources) {
 			throw new Error('please define nameSources property ["property1", "property2", ... ]');
 		}
-		for(let key of this.nameSources) {
+		for(let key of nameSources) {
 			const name = this.model.get(key);
 			if (name) return name;
 		}

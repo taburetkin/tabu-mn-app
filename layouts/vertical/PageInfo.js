@@ -4,11 +4,14 @@ import './page-info.less';
 import { ButtonView } from '../../ButtonView.js';
 import { AppInfo } from './AppInfo.js';
 import { AppNav } from './AppNav.js';
+import { Fast } from './Fast.js';
+import { singleSelectMixin } from '../../api/collection/singleSelectMixin.js';
 
 
 const predefinedTabs = {
+	fast: { id: 'fast', name: '', icon: 'fa:circle-info', view: Fast },
 	tree: { id: 'nav', name: 'навигация', icon:'fa:folder-tree', view: AppNav },
-	info: { id: 'info', name: 'приложение', icon:'fa:circle-info', badge: 127, view: AppInfo }
+	//info: { id: 'info', name: 'приложение', icon:'fa:circle-info', badge: 127, view: AppInfo }
 };
 
 const TabTriggerView = View.extend({
@@ -31,7 +34,7 @@ const TabTriggerView = View.extend({
 		return `<span class="button-badge"><span>${badge}</span></span>`;
 	},
 	isActive() {
-		return this.model === this.model.collection.active;
+		return this.model.collection.isSelected(this.model);
 	},
 	modelEvents: {
 		'active':'updateClassName'
@@ -44,20 +47,11 @@ const TabTriggerView = View.extend({
 
 const TriggersCollection = Collection.extend({
 
-	setActive(model) {
-		if (this.active) {
-			let active = this.active;
-			delete this.active;
-			active.trigger('active', active, false);
-		}
-		if (model) {
-			this.active = model;
-			model.trigger('active', model, true);		
-		}
-	},
+	...singleSelectMixin,
+	selectModelEvent: 'active',
 	initializeActiveTab() {
 		let model = this.first();
-		this.setActive(model);
+		this.select(model);
 	},
 
 });
@@ -67,27 +61,11 @@ const TabTriggersView = CollectionView.extend({
 	name: 'triggersView',
 	className: 'tab-triggers',
 	childView: TabTriggerView,
-	// initialize() {
-	// 	const models = this.getModels();
-	// 	this.initializeCollection(models);
-	// 	this.initializeActiveTab();
-	// },
 
-
-	// setActive(model) {
-	// 	if (this.collection.active) {
-	// 		let active = this.collection.active;
-	// 		delete this.collection.active;
-	// 		active.trigger('active', active, false);
-	// 	}
-	// 	this.collection.active = model;
-	// 	model.trigger('active', model, true);
-	// },
 	childViewEvents: {
 		'tab:trigger'(v) {
-			console.log('chpok?', v.model)
-			if (this.collection.active === v.model) return;
-			this.collection.setActive(v.model);
+			if (this.collection.isSelected(v.model)) return;
+			this.collection.select(v.model);
 		}
 	}
 });
@@ -97,15 +75,14 @@ const TabContentView = View.extend({
 	className: 'tab-content',
 	collectionEvents: {
 		active(tab, shouldShow) {
-			console.warn(tab, shouldShow);
 			if (shouldShow) {
 				this.render();
 			}
 		}
 	},
 	children() {
-		if (!this.collection.active) return;
-		let tab = this.collection.active;
+		let tab = this.collection.selected();
+		if (!tab) return;
 		let view = tab.get('view');
 		if (view) { return [view] }
 	}
@@ -120,16 +97,20 @@ export const PageInfo = View.extend({
 	},
 	getTriggersModels() {
 		const models = [
-			{name: 'tab1' },
-			{name: 'tab2' },
-			{name: 'tab3' },
-			{name: 'tab4' },
-			{name: 'tab5' },
-			{name: 'tab6' },
-			{name: 'tab7' },
+			// {name: 'tab1' },
+			// {name: 'tab2' },
+			// {name: 'tab3' },
+			// {name: 'tab4' },
+			// {name: 'tab5' },
+			// {name: 'tab6' },
+			// {name: 'tab7' },
+			predefinedTabs.fast,
+			predefinedTabs.tree,
+			//predefinedTabs.info
 		];
-		models.unshift(predefinedTabs.tree);
-		models.push(predefinedTabs.info);
+		// models.unshift(predefinedTabs.fast);
+		// models.unshift(predefinedTabs.tree);
+		// models.push(predefinedTabs.info);
 		return models;
 	},
 	childViewOptions() {

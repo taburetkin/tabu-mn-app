@@ -1,0 +1,1 @@
+export { singleSelectMixin } from './singleSelectMixin.js'

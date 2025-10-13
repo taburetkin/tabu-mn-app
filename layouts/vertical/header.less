@@ -11,18 +11,33 @@
 
 	.header-text {
 
-		padding: var(--gutter-half);
+		//padding: var(--gutter-half);
 		flex-grow: 1;
 		flex-shrink: 1;
 	}
 
+	.bottom-links {
+		display: flex;
+		flex-direction: row;
+		overflow: auto;
+		flex-wrap: nowrap;
+	}
+	.additionals {
+		display: flex;
+		flex-direction: row;
+		overflow: auto;
+		flex-wrap: nowrap;
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
 	.subpages {
 		display: flex;
 		flex-direction: row;
 		overflow: auto;
 		flex-wrap: nowrap;
-		padding: 0 var(--gutter-half);
-		column-gap: var(--gutter-half);
+		flex-grow: 1;
+		flex-shrink: 1;
+
 		.subpage {
 			> a {
 				display: flex;
@@ -30,9 +45,6 @@
 				flex-wrap: nowrap;
 				white-space: nowrap;
 				align-items: center;
-				column-gap: var(--gutter-quart);
-				padding: 0 var(--gutter-quart);
-				padding-bottom: var(--gutter-quart);
 			}
 		}
 	}

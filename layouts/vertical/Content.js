@@ -1,29 +1,46 @@
 import { View, CollectionView, request } from '../../vendors.js';
-import { AppNav } from './AppNav.js';
-import { PageInfo } from './PageInfo.js';
+import { PageLink } from './PageLink.js';
 
-const Child = View.extend({
-	template: '<a href="<%= href %>"><span><%= name %></span></a>',
-	templateContext() {
-		return {
-			name: this.model.get('name') || this.model.get('menuName')
-		}
-	}
-});
 
 const Children = CollectionView.extend({
-	childView: Child,
+	className: 'children-plates',
+	childView: PageLink,
+	childViewOptions() {
+		return {
+			className: 'page-plate',
+			nameSources: ['name', 'menuName']
+		}
+	},
 	initialize() {
-		const page = request.page;
-		if (!page) return;
-		const models = page.getChildren().map(p => p.getLink()).filter(f => !!f);
+		const models = this.getOption('models', true);
 		this.initializeCollection(models);
 	}
 });
 
+
+
+const UnderConstruction = View.extend({
+	template: 'Страница временно не доступна, ведутся технические работы.'
+});
+
 export default View.extend({
 	className: 'content',
-	children: [
-		PageInfo
-	]
+	children() {
+		if (!request.page) { return; }
+		const page = request.page;
+		const content = page.getOption('content', true);
+		if (content) {
+			return [content];
+		}
+		const root = page.getSubpagesRoot();
+		if (!root || root !== page) {
+			console.warn('proverka', page, root)
+			const models = page.getChildren().map(p => p.getLink());
+			if (models.length) {
+				return [{ class: Children, models }]
+			}
+
+		} 
+		return [UnderConstruction]
+	}
 });

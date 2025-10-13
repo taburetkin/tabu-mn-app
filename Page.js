@@ -238,7 +238,16 @@ export const Page = AppObject.extend({
 			}
 		}
 		return this.getOption('startClaims', true);
+	},
+
+	getSubpagesRoot() {
+		return _getSubpagesRoot(this) || _getSubpagesRoot(this.parent);
 	}
 
 });
+
+function _getSubpagesRoot(page) {
+	if (!page) { return; }
+	return page.getOption('subpages', true) ? page : undefined;
+}
 

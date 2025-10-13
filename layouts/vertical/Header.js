@@ -117,6 +117,73 @@ const Subpages = CollectionView.extend({
 	}	
 });
 
+const Additional = PageLink.extend({
+	className: 'additional',
+	nameSources: ['name']
+});
+
+const Additionals = CollectionView.extend({
+	className: 'additionals',
+	childView: Additional,
+	initialize() {
+		const models = [];
+
+		const filter = this.getFilterModel();
+		if (filter) { models.push(filter); }
+
+		const selector = this.getSelectorModel();
+		if (selector) { models.push(selector); }
+
+		const recordset = this.getRecordsetModel();
+		if (recordset) { models.push(recordset); }
+
+		this.initializeCollection(models);
+
+	},
+	getFilterModel() {
+		const model = this.getOption('filter', true);
+		if (model) {
+			return {
+				name: 'фильтры', icon: 'fa:filter'
+			};
+		}		
+	},
+	getSelectorModel() {
+		const model = this.getOption('selector', true);
+		if (model) {
+			return {
+				name: 'отобрано', icon: 'fa:check-square'
+			};
+		}		
+		
+	},
+	getRecordsetModel() {
+		const model = this.getOption('recordset', true);
+		if (model) {
+			return {
+				name: 'найдено', icon: 'fab:trello'
+			};
+		}		
+		
+	},
+});
+
+const HeaderAdditionals = View.extend({
+	className: 'bottom-links',
+	children() {
+		const views = [];
+		const additionals = this.getOption('additionals', true);
+		if (additionals) {
+			views.push({ class: Additionals, ...additionals });
+		}
+		const subpagesRoot = this.getOption('subpagesRoot', true);
+		if (subpagesRoot) {
+			views.push(Subpages);
+		}
+		return views;
+	}
+});
+
 export default View.extend({
 	tagName: 'header',
 	//template: '<nav></nav><div></div>',
@@ -131,6 +198,11 @@ export default View.extend({
 		return HeaderNav;
 	},	
 	getSubpages() {
+		const additionals = getPageAdditionals();
+		const subpagesRoot = getSubpagesRoot();
+		if (additionals || subpagesRoot) {
+			return { class: HeaderAdditionals, additionals, subpagesRoot };
+		}
 		if (getSubpagesRoot()) {
 			return Subpages;
 		}
@@ -155,4 +227,15 @@ function getSubpagesRoot() {
 	const root = _getSubpagesRoot(p);
 	if (root) return root;
 	return _getSubpagesRoot(p.parent);
+}
+
+function getPageAdditionals(p) {
+	p = p || getPage();
+	if (!p) { return; }
+	const filter = p.getOption('filter', true);
+	const selector = p.getOption('selector', true);
+	const recordset = p.getOption('recordset', true);
+	if (filter || selector || recordset) {
+		return { filter, selector, recordset };
+	}
 }

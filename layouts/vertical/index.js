@@ -2,6 +2,7 @@ import { View } from '../../vendors.js';
 import Content from './Content';
 import Footer from './Footer';
 import Header from './Header';
+import './layout.less';
 
 const Layout = View.extend({
 	id: 'app',
