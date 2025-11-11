@@ -1,4 +1,10 @@
-export { claimsApi } from './api/index.js';
+export {
+	okResult, errResult,
+	isAsyncResult,
+	asyncCall, asyncMixin,
+} from './async.js';
+
+export * from './utils/index.js';
 
 export {
 	actorClaims,
@@ -6,15 +12,8 @@ export {
 	bodyClass
 } from './singletons/index.js'
 
-export {
-	okResult, errResult,
-	isAsyncResult,
-	asyncCall, asyncMixin,
-} from './async.js';
 
-export {
-	modals
-} from './api/index.js';
+export * from './api/index.js';
 
 export { AppObject } from './AppObject.js';
 export { App } from './App.js';
@@ -26,3 +25,5 @@ export { Backend } from './backend.js';
 export { http } from './http.js';
 
 export {default as ApplicationVerticalLayout } from './layouts/vertical/index.js';
+
+export * from './components/index.js';
