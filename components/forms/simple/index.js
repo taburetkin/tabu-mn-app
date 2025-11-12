@@ -11,7 +11,12 @@ export const SimpleFormView = View.extend({
 	...formViewMixin,
 	initialize() {
 		this.initializeSchemaData({ inlineEdit: true, edit: true });
-		console.log('simple form', this.schemaData)
+		
+	},
+	submitFormContainerViewOptions() {
+		const options = this.getOptions(['submitButton', 'cancelButton', 'rightButton'], true);
+		
+		return options;
 	},
 	childViewOptions() {
 		return {

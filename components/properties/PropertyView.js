@@ -19,6 +19,7 @@ const PropertyValueView = View.extend({
 	baseClassName: 'property-value', 
 	initialize() {
 		this.initializeSchemaData();
+		this.on('all', e => console.log('->', e))
 	},
 	childViewOptions() {
 		return {
@@ -39,10 +40,15 @@ const PropertyValueView = View.extend({
 			}
 		}
 		return views;
+	}, 
+	childViewTriggers: {
+		'before:validate':'before:validate',
+		'validate':'validate',
 	}
 });
 
 export const PropertyView = View.extend({
+	stateClassNames: ['required','invalid'],
 	baseClassName: [
 		'property-container',
 		v => toCssClass(valueSchemaApi.inputName(v.valueSchema, v.schemaData))
@@ -63,7 +69,16 @@ export const PropertyView = View.extend({
 			views.unshift(PropertyLabelView);
 		}
 		return views;
+	},
+	childViewEvents: {
+		'before:validate':'_onBeforeValidate',
+		'validate':'_onValidate',
+	},
+	async _onValidate(resPromise) {
+		const res = await resPromise;
+		console.log('prop validate', res)
 	}
+
 });
 
 function toCssClass(text) {

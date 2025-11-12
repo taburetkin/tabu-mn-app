@@ -15,7 +15,6 @@ const Layout = View.extend({
 		footer: Footer
 	},
 	onStartPage() {
-		console.log('wtf');
 		this.render();
 	},
 	onStartPageFail(exc) {

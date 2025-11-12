@@ -9,7 +9,7 @@ export const PropertiesListView = CollectionView.extend({
 	initialize() {
 		this.initializeSchemaData();
 		this.collection = this.schemaData.schemaCollection;
-		console.log('colle',this.collection)
+		
 	},
 	viewFilter(v) {
 		if (!this.schemaProperties) { return true; }

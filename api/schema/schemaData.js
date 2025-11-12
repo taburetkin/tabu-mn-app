@@ -20,7 +20,7 @@ export function buildSchemaData(data, ext) {
 
 	schemaCollection = getSchemaCollection(schemaCollection, modelSchema);
 	modelSchema = schemaCollection.getSchema();
-	console.warn(modelSchema)
+	//console.warn(modelSchema)
 
 	const schemaData = Object.assign({}, data, { [sign]: true, modelSchema, schemaModel, modelType, schemaCollection }, ext);
 

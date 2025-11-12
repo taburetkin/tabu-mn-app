@@ -15,8 +15,11 @@ export const InputView = View.extend({
 	allowTabKey: false,
 
 	initialize() {
+		this.on('all', e => console.log(']]	->', e))
 		this.initializeSchemaData();
 		this.initializeInput();
+		this.initialValidateAsync();
+
 		//this.on('attach', this._tryFocus);
 	},
 	templateContext() {

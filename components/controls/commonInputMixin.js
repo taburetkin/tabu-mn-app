@@ -12,7 +12,7 @@ export const commonInputMixin = {
 	},
 	_tryFocus() {
 		if (document.activeElement && document.activeElement !== document.body) {
-			return console.log('active exist', document.activeElement);
+			return; // console.log('active exist', document.activeElement);
 		}
 		this.$('input').focus();
 	},
