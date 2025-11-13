@@ -49,6 +49,11 @@ export const engines = {
 			return `<span class="icon svg-container"><svg><use xlink:href="/assets/icon-sprite.svg#${arg.iconId}"></use></svg></span>`;
 		}
 	},
+	svgspriteicon: {
+		getHtml(arg) {
+			return `<span class="icon svg-container"><svg><use xlink:href="/assets/icon-sprite.svg#icon-${arg.iconId}"></use></svg></span>`;
+		}
+	},	
 	svg: {
 		getHtml(arg) {
 			return `<span class="icon svg-container"><svg viewBox="${arg.svg.viewBox}"><use xlink:href="${arg.svg.toString()}" /></svg></span>`;
