@@ -19,12 +19,12 @@ const PropertyValueView = View.extend({
 	baseClassName: 'property-value', 
 	initialize() {
 		this.initializeSchemaData();
-		this.on('all', e => console.log('->', e))
 	},
 	childViewOptions() {
 		return {
 			schemaData: this.schemaData,
-			valueSchema: this.model
+			valueSchema: this.model,
+			editConfig: this.getOption('editConfig', true)
 		}
 	},
 	children() {
@@ -44,11 +44,12 @@ const PropertyValueView = View.extend({
 	childViewTriggers: {
 		'before:validate':'before:validate',
 		'validate':'validate',
+		'user:input':'user:input',
 	}
 });
 
 export const PropertyView = View.extend({
-	stateClassNames: ['required','invalid'],
+	stateClassNames: ['required','invalid', 'changed', 'has-value'],
 	baseClassName: [
 		'property-container',
 		v => toCssClass(valueSchemaApi.inputName(v.valueSchema, v.schemaData))
@@ -60,7 +61,8 @@ export const PropertyView = View.extend({
 	childViewOptions() {
 		return {
 			schemaData: this.schemaData,
-			model: this.model
+			model: this.model,
+			editConfig: this.getOption('editConfig', true)
 		}
 	},
 	children() {
@@ -70,13 +72,24 @@ export const PropertyView = View.extend({
 		}
 		return views;
 	},
+	childViewTriggers: {
+		'user:input': 'user:input'
+	},
 	childViewEvents: {
-		'before:validate':'_onBeforeValidate',
 		'validate':'_onValidate',
 	},
-	async _onValidate(resPromise) {
-		const res = await resPromise;
-		console.log('prop validate', res)
+	_onValidate(res, { isInitial } = {}) {
+		const ec = this.getOption('editConfig', true) || {};
+		if (!isInitial) {
+			this.triggerMethod('validate', this.valueSchema.id, res);
+		}
+		//console.log('prop validate', res, ec)
+		const { ignorePropertyInvalidState } = ec;
+		if (ignorePropertyInvalidState === true) { return; }
+		this.state('invalid', !res.ok);
+
+		// const res = resPromise;
+		// this.triggerMethod('validate', this.valueSchema.id, res);
 	}
 
 });

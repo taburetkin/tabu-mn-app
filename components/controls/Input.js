@@ -2,25 +2,25 @@ import { valueSchemaApi } from '../../api/index.js';
 import { schemaApiViewMixin } from '../../api/schema/schemaApiViewMixin.js';
 import { View } from '../../vendors.js';
 import { commonInputMixin } from './commonInputMixin.js';
+import { controlMixin } from './controlMixin.js';
 
 
 export const InputView = View.extend({
 	baseClassName: 'inline-user-input edit-control',
 	template: '<div class="wrapper"><input<%= inputAttributes %>></div>',
-	...schemaApiViewMixin,
+	//...schemaApiViewMixin,
+	...controlMixin,
 	...commonInputMixin,
+
 	inputTagName: 'input',
 
 	userInputDoneCtrlKey: false,
 	allowTabKey: false,
-
+	
 	initialize() {
-		this.on('all', e => console.log(']]	->', e))
-		this.initializeSchemaData();
+		//this.on('all', e => console.log('	]]	->', e));
+		this.initializeControl();
 		this.initializeInput();
-		this.initialValidateAsync();
-
-		//this.on('attach', this._tryFocus);
 	},
 	templateContext() {
 		return {

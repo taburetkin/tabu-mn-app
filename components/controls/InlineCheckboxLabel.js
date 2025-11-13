@@ -1,17 +1,14 @@
 import { valueSchemaApi } from '../../api/schema/valueSchemaApi.js';
-import { schemaApiViewMixin } from '../../api/schema/schemaApiViewMixin.js';
 import { View } from '../../vendors.js';
-import { setValueMixin } from './setValueMixin.js';
+import { controlMixin } from './controlMixin.js';
 
 
 export const InlineCheckboxLabel = View.extend({
-	...schemaApiViewMixin,
-	...setValueMixin,
+	...controlMixin,
 	className: 'inline-checkbox-label edit-control',
 	template: `<label class="wrapper"><span class="input-container"><input type="checkbox" name="<%= id %>"></span><span class="text"><%= label %></span></label>`,
 	initialize() {
-		this.initializeSchemaData();
-		this.initialValidateAsync();
+		this.initializeControl();
 	},
 	templateContext() {
 		return {

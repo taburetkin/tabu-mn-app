@@ -58,6 +58,7 @@ export const ButtonView = View.extend({
 	...actionButtonMixin,
 	tagName: 'button',
 	baseClassName: 'app-btn',
+	stateClassNames: ['disabled', 'waiting'],
 	template: `<span class="wrapper">
 	<%= iconHtml %>
 	<%= textHtml %>

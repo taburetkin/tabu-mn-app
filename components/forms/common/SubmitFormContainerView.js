@@ -2,9 +2,14 @@ import { ButtonView } from '../../../ButtonView.js';
 import { View } from '../../../vendors.js';
 
 export const SubmitFormContainerView = View.extend({
-	name: 'submitFormContainerView',
+	name: 'formButtons',
+	setAsParentProperty: 'formButtons',
 	baseClassName: 'submit-form-container',
 	childView: ButtonView,
+	parentShouldTriggerSetup: true,
+	initialize() {
+		console.log('SUBMITS', this);
+	},
 	children() {
 		const views = [
 			this._getButton('submitButton'),
@@ -19,7 +24,16 @@ export const SubmitFormContainerView = View.extend({
 		const arg = this.getOption(name, true);
 		
 		if (typeof arg === 'string') {
-			return { text: arg }
+			return { text: arg, name, setAsParentProperty: name }
 		}
+	},
+	onSetup(parent) {
+		this.listenTo(parent, 'state:invalid', (stateValue) => {
+			if (stateValue) {
+				this.submitButton.disable();
+			} else {
+				this.submitButton.enable();
+			}
+		});
 	}
 });

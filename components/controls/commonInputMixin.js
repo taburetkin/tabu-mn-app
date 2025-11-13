@@ -1,9 +1,8 @@
-
 import { setValueMixin } from "./setValueMixin.js";
 import { debounce } from '../../vendors.js';
 
 export const commonInputMixin = {
-	...setValueMixin,
+	// ...setValueMixin,
 	initializeInput() {
 		this._setInputedValue = debounce(this._setInputedValue, 150);
 		this.on('attach', this._tryFocus);
@@ -51,7 +50,7 @@ export const commonInputMixin = {
 		}
 	},
 	async _setInputedValue(value, done) {
-		console.warn('incoming', value);
+		console.warn('_setInputedValue', value);
 		value = this._normalizeInputedValue(value);
 		this.schemaSet(value, done)
 	},

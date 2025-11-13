@@ -11,11 +11,19 @@ export const PropertiesGroupView = View.extend({
 		this.initializeSchemaData();
 	},
 	childViewOptions() {
-		return { schemaData: this.schemaData }
+		return { 
+			schemaData: this.schemaData,
+			editConfig: this.getOption('editConfig', true)
+		}
 	},
 	templateContext() {
 		return {
 			groupName: this.getOption('groupName', true)
 		}
+	},
+	childViewTriggers: {
+		'user:input':'user:input',
+		'property:validate': 'property:validate'
 	}
+
 });

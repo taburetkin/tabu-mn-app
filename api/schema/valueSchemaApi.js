@@ -47,7 +47,14 @@ export const valueSchemaApi = {
 	},
 
 	validate(value, valueSchema, options) {
-
+		const required = this.get(valueSchema, 'required', options);
+		if (required && (value == null || value === '')) {
+			return { ok: false, value: 'обязательное поле' }
+		}
+		const validateCall = callMethod(valueSchema, 'vallidate', [value, options]);
+		if (validateCall.ok) {
+			return validateCall.value;
+		}
 	},
 
 
@@ -93,3 +100,5 @@ function setModelValue(obj, key, value) {
 	}
 	return setByPath(obj, key, value);
 }
+
+

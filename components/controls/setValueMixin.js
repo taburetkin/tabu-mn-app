@@ -1,36 +1,36 @@
 import { valueSchemaApi } from "../../api/schema/index.js";
 import './edit-control.less';
 export const setValueMixin = {
+
 	async schemaSet(value, done) {
 		const validateRes = await this._validateAsync(value, done);
 		valueSchemaApi.setValue(value, this.valueSchema, this.schemaData);
-		this.triggerMethod('user:input', value, done);
+		console.log('schemaSet', value, ' -- ', this.schemaData.schemaModel);
+		this.triggerMethod('user:input', this.valueSchema.id, value, done);
 		if (done) {
 			this.triggerInputDone(value, done);
 		}
 		return validateRes;
 	},
 
-	_validateAsync(value, done) {
+	async _validateAsync(value, done, isInitial) {
 		this.triggerMethod('before:validate', value);
 		let result;
 		if (typeof this.validate === 'function') {
-			result = this.validate(value, done);
+			result = this.validate(value, done, isInitial);
 		} else {
 			result = valueSchemaApi.validate(value, this.valueSchema, this.schemaData);
 		}
-		const res = normalizeResultAsync(result, this.valueSchema);
-		this.triggerMethod('validate', res, value);
-		console.log('initial validate done')
+		const res = await normalizeResultAsync(result, this.valueSchema);
+		this.triggerMethod('validate', res, { value, isInitial, done });
 		return res;
 	},
 	initialValidateAsync() {
 		const value = this.schemaValue();
-		console.log('initial validate');
-		return this._validateAsync(value, true);
+		return this._validateAsync(value, true, true);
 	},
 	triggerInputDone(value, resolve) {
-		this.triggerMethod('user:input:done', value, resolve);
+		this.triggerMethod('user:input:done', this.valueSchema.id, value, resolve);
 	},
 
 }

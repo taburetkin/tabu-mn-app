@@ -18,7 +18,12 @@ export const PropertiesListView = CollectionView.extend({
 	childViewOptions(model) {
 		return {
 			schemaData: this.schemaData,
-			schemaProperty: model.id
+			schemaProperty: model.id,
+			editConfig: this.getOption('editConfig', true)
 		}
+	},
+	childViewTriggers: {
+		'user:input':'user:input',
+		'validate': 'property:validate'
 	}
 });
