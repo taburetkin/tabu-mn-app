@@ -5,7 +5,11 @@ import { PropertiesListView } from './PropertiesListView.js';
 export const PropertiesGroupView = View.extend({
 	baseClassName: 'properties-group',
 	template: '<header><%= groupName %></header>',
-	children: [PropertiesListView],
+	children: [
+		v => v.getTopView(),
+		PropertiesListView,
+		v => v.getBottomView()
+	],
 	...schemaApiViewMixin,
 	initialize() {
 		this.initializeSchemaData();
@@ -24,6 +28,12 @@ export const PropertiesGroupView = View.extend({
 	childViewTriggers: {
 		'user:input':'user:input',
 		'property:validate': 'property:validate'
-	}
+	},
+	getTopView() {
+		return this.getOption('topView', true);
+	},
+	getBottomView() {
+		return this.getOption('bottomView', true);
+	},
 
 });
