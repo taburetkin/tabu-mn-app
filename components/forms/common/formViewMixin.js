@@ -27,9 +27,16 @@ export const formViewMixin = {
 			args.unshift(propertiesToValidate);
 		}
 		const res = await modelSchemaApi.validateAsync(...args);
-		this.state({ invalid: !res.ok, errors: !res.ok ? res.value : undefined })
-		// console.error('>>> _validate <<<', res);
-		// console.log(this.formButtons);
-		// console.log(this.formButtons?.submitButton);
-	}
+		this.state({ invalid: !res.ok, errors: !res.ok ? res.value : undefined });
+	},
+	formButtonsOptions() {
+		const options = this.getOptions([
+			'submitButton', 'submitAction',
+			'cancelButton', 'cancelAction',
+			'rightButton', 'rightAction'
+		], true);
+		
+		return options;
+	},
+
 }

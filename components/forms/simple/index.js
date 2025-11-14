@@ -12,11 +12,6 @@ export const SimpleFormView = View.extend({
 	initialize() {
 		this.initializeForm();
 	},
-	formButtonsOptions() {
-		const options = this.getOptions(['submitButton', 'cancelButton', 'rightButton'], true);
-		
-		return options;
-	},
 	childViewOptions() {
 		return {
 			schemaData: this.schemaData,
@@ -24,9 +19,4 @@ export const SimpleFormView = View.extend({
 			editConfig: this.getOption('editConfig', true)
 		}
 	},
-	childViewEvents: {
-		'property:validate'(path, validateResult) {
-			console.warn(path, validateResult);
-		}
-	}
 });

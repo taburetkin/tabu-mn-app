@@ -15,8 +15,12 @@ const actionButtonMixin = {
 		if (!this.isActionAllowed()) { console.warn('button is not iddle or disabled, action wont taked'); }
 
 		this._setWaiting();
+		const buttonName = this.getOption('name', true);
+		this.triggerMethod('before:action', buttonName);
 
 		const res = await this.asyncResult(() => invokeProp(this, '_action', this, [event]));
+		
+		this.triggerMethod('after:action', buttonName, res);
 
 		this._setIdle();
 
