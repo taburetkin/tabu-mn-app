@@ -16,7 +16,10 @@ const TreeItemChildren = CollectionView.extend({
 	className: 'app-nav-tree-item-children',
 	initialize(options) {
 		this.mergeOptions(options, ['page', 'pageChildren']);
-		const models = this.pageChildren.map(child => Object.assign({ page: child }, child.getLink()));
+		const models = this.pageChildren
+									.map(child => Object.assign({ page: child }, child.getLink()))
+									.filter(child => child.href != null);
+		//console.log(models);
 		this.initializeCollection(models);
 	},
 	childView() {

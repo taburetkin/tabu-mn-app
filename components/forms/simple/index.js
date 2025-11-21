@@ -4,6 +4,7 @@ import { SubmitFormContainerView, formViewMixin } from '../common/index.js';
 
 export const SimpleFormView = View.extend({
 	baseClassName: 'form-layout',
+	tagName: 'form',
 	children: [
 		PropertiesGroupView,
 		SubmitFormContainerView

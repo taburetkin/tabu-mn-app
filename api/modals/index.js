@@ -109,6 +109,15 @@ export const modals = {
 		return this.message(headerText, message, modalOptions);
 	},
 
+	httpError(arg) {
+		if (arg instanceof Response) {
+
+		}
+		else {
+			return this.error(arg.message);
+		}
+	},
+
 	confirm() {
 		let { message, headerText, modalOptions } = normalizeArgs.apply(this, arguments);
 		modalOptions = Object.assign({

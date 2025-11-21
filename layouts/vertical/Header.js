@@ -1,7 +1,7 @@
 import { View, CollectionView, request } from '../../vendors.js';
 import './header.less';
 import './breadcrumbs.less';
-import { iconMixin } from '../../api/icons/iconMixin.js';
+//import { iconMixin } from '../../api/icons/iconMixin.js';
 import { modals } from '../../api/index.js';
 import { PageInfo } from './PageInfo.js';
 import { PageLink } from './PageLink.js';
@@ -22,7 +22,7 @@ const Breadcrumbs = CollectionView.extend({
 		
 		page = page.parent;
 		while (page) {
-			const model = page.getLink();
+			const model = page.getLink(undefined, { force: true });
 			models.unshift(model);
 			page = page.parent;
 		}

@@ -1,3 +1,6 @@
+import { addPreloaderToAsyncCallOptions } from "./api/preloader/index.js";
+import { invokeValue } from "./vendors.js";
+
 function _result(ok, value) {
 	if (isAsyncResult(value)) {
 		value = value.value;
@@ -32,25 +35,34 @@ function normalizeAsyncResult(arg, okValue) {
 }
 
 
-export async function asyncCall(arg, ...args) {
-	if (typeof arg === 'function') {
-		arg = arg(...args);
+export async function asyncCall(arg, options = {}) {
+	if (options.preloader) {
+		options = addPreloaderToAsyncCallOptions(options, options.preloader);
 	}
+	const { args = [], beforeAction, afterAction, onSuccess, onFail } = options;
+
+	const beforeResult = invokeValueEnsure(beforeAction);
+	if (!beforeResult.ok) return beforeResult;
+
+	const argResult = invokeValueEnsure(arg, null, args);
+	if (!argResult.ok) return argResult;
+
 	
-	if (arg instanceof Promise === false) {
-		return normalizeAsyncResult(arg);
-	}
-	
+	let result;
+	let resultCallback;
 	try {
 		
-		const res = await arg;
-		return normalizeAsyncResult(res);
-	
+		const promiseResult = await argResult.value;
+		result = normalizeAsyncResult(promiseResult);
+		resultCallback = result.ok ? onSuccess : onFail;
 	} catch(exc) {
-
-		return normalizeAsyncResult(exc, false)
-
+		
+		result = normalizeAsyncResult(exc, false);
+		resultCallback = onFail;
 	}
+	invokeValueEnsure(afterAction, null, beforeResult.value);
+	invokeValueEnsure(resultCallback, null, result.value);
+	return result;
 }
 
 export const asyncMixin = {
@@ -58,7 +70,19 @@ export const asyncMixin = {
 		return this.asyncResult(() => this.triggerMethod.apply(this, arguments))
 
 	},
-	asyncResult(arg) {
-		return asyncCall(arg);
+	asyncResult(arg, options) {
+		return asyncCall(arg.bind(this), options);
+	}
+}
+
+
+
+function invokeValueEnsure(callback, context, args) {
+	try {
+		const result = invokeValue(callback, context, args);
+		return okResult(result);
+	} catch (err) {
+		console.error(err);
+		return errResult(err);
 	}
 }

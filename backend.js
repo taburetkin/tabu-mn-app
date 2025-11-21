@@ -1,23 +1,34 @@
-import { invokeProp } from "../tabu-mn/utils/invokeValue.js";
-import { registerClass } from "../tabu-mn/utils/knownClasses.js";
+import { registerClass, invokeProp, invokeValue } from "./vendors.js";
 import { http } from "./http.js";
+import { modals } from './api/modals/index.js';
 
 export class Backend {
 
 	constructor(root) {
 		this.root = root;
-		this.headers = {};
+		this.headers = {
+			'Content-Type': 'application/json'
+		};
 	}
 
 	sendAsync(options) { 
 		options = this._normalizeOptions(options);		
-		return http.sendAsync(options)
+		const promise = http.sendAsync(options);
+		return promise;
 	}
 
 	_normalizeOptions(options = {}) {
-		const { headers = {}, replaceHeaders } = options;
-		const actualHeaders = replaceHeaders ? headers : Object.assign({}, this.headers, headers);
-		options = Object.assign({}, options, { headers: actualHeaders });
+
+		const body = normalizeBody(options);
+		const headers = normalizeHeaders(this, options);
+		if (options.showError) {
+			const onFail = options.onFail;
+			options.onFail = response => {
+				modals.httpError(response);
+				invokeValue(onFail, null, response);
+			}
+		}
+		options = Object.assign({}, options, { headers, body });
 		return options;
 	}
 
@@ -30,11 +41,20 @@ export class Backend {
 	}
 
 	setHeader(key, value) {
-		this.headers[key] = value;
+		if (value == null) {
+			delete this.headers[key];
+		} else {
+			this.headers[key] = value;
+		}
 	}
+
+
 }
 
 registerClass(Backend);
+
+const startKey = Symbol('start');
+const endKey = Symbol('end');
 
 export const entityBackendMixin = {
 
@@ -43,51 +63,83 @@ export const entityBackendMixin = {
 	createMethod: 'PUT',
 	updateMethod: 'PATCH',
 
-	async _sendBackendRequestAsync(options) {
+	async sendAsync(options) {
 		ensureBackend(this);
 		options = this._normalizeBackendSendOptions(options);
-		const { operation } = options;
+		const { operation = 'undefined' } = options;
 		if (!this.backendOperations) { this.backendOperations = {}; }
 		if (!this.backendOperations[operation]) { this.backendOperations[operation] = { count: 0 } }
 		const op = this.backendOperations[operation];
-		op.start = Date.now();
+		const start = Date.now(); 
+		this.backendOperations[startKey] = start;
+		op.start = start;
 		op.end = undefined;
+		this.trigger('before:' + operation, this);
 		const res = await this.backend.sendAsync(options);
+		const end = Date.now();
 		op.count++;
-		op.end = Date.now();
+		op.end = end;
+		this.backendOperations[startKey] = end;
+		this.trigger(operation + ':complete', this);
 		return res;
 	},
 
-	_normalizeBackendSendOptions(options) {
-		const ownUrl = invokeProp(this, 'url', this, this);
-		const optionsUrl = options.url;
-		const url = normalizeUrl(ownUrl, optionsUrl, this.backend.root);
+	_normalizeBackendSendOptions(options = {}) {
+		const url = normalizeUrl(this, options);
 		options = Object.assign({}, options, { url });
 		return options;
 	},
 
-	fetchAsync(options) { 
+	async fetchAsync(options) { 
 		const method = this.fetchMethod;
 		options = Object.assign({ method, operation: 'fetch' }, options);
-		return this._sendBackendRequestAsync(options);
+		const result = await this.sendAsync(options);
+		console.warn('fetch result', result);
+		if (result.ok) {
+			this.set(result.value);
+		}
+		return result;
 	},
 
 	deleteAsync() { 
 		const method = this.deleteMethod;
 		options = Object.assign({ method, operation: 'delete' }, options);
-		return this._sendBackendRequestAsync(options);
+		return this.sendAsync(options);
 	},
 
 	updateAsync() { 
 		const method = this.updateMethod;
 		options = Object.assign({ method, operation: 'update' }, options);
-		return this._sendBackendRequestAsync(options);
+		return this.sendAsync(options);
 	},
 
 	createAsync() {
 		const method = this.createMethod;
 		options = Object.assign({ method, operation: 'create' }, options);
-		return this._sendBackendRequestAsync(options);
+		return this.sendAsync(options);
+	},
+
+	isFetching() {
+		if (!this.backendOperations) { return false; }
+		const start = this.backendOperations?.fetch?.start;
+		const end = this.backendOperations?.fetch?.end;
+		return start && !end;
+	},
+
+	isFetched() {
+		if (!this.backendOperations) { return false; }
+		const start = this.backendOperations?.fetch?.start;
+		const end = this.backendOperations?.fetch?.end;
+		const count = this.backendOperations?.fetch?.count || 0;
+		return (start && end) && count > 0;
+	},
+
+	isIddle() {
+		if (!this.backendOperations) { return true; }
+		const bo = this.backendOperations;
+		const start = bo[startKey];
+		const end = bo[endKey];
+		return (!start && !end) || (start && end);
 	}
 
 }
@@ -98,19 +150,63 @@ function ensureBackend(_this) {
 	}
 }
 
-function normalizeUrl(ownUrl, optionsUrl, rootUrl) {
+function normalizeUrl(model, options = {}) {
+	
+	const { operation, url: optionsUrl } = options;
+	//let { optionsUrl, ownUrl, urlRoot, backendRoot } = options;
+
+	// если в опциях передан абсолютный урл то используем его
 	let absoluteOptionsUrl = isAbsoluteUrl(optionsUrl);
 	if (absoluteOptionsUrl) { return optionsUrl; }
+
+	let operationUrl;
+	if (operation) {
+		operationUrl = invokeProp(model, operation + 'Url', model, model);
+		let urlRoot = invokeProp(model, 'urlRoot', model, model);
+		if (urlRoot && !isAbsoluteUrl(operationUrl)) {
+			operationUrl = joinUrlChunks(urlRoot, operationUrl);
+		}
+	}
+	// if (isAbsoluteUrl(operationUrl)) {
+	// 	return operationUrl;
+	// }
+	let backendRoot = model.backend.root;
+	const ownUrl = operationUrl || invokeProp(model, 'url', model, [model, operation]);
 	let absoluteOwnUrl = isAbsoluteUrl(ownUrl);
 	if (absoluteOwnUrl) {
 		return joinUrlChunks(ownUrl, optionsUrl);
-	}
-	let url = joinUrlChunks(rootUrl, ownUrl, optionsUrl);
-	if (!isAbsoluteUrl(url)) { 
-		throw new Error('url must be an absolute url: ' + url);
+	} else if (ownUrl) {
+		return joinUrlChunks(backendRoot, ownUrl, optionsUrl);
+	} else if (optionsUrl) {
+		return joinUrlChunks(backendRoot, optionsUrl);
 	}
 
-	return url;
+
+
+	// let root;
+	// let urlRoot = invokeProp(model, 'urlRoot', model, [model, operation]);
+	// if (ownUrl) {
+	// 	if (isAbsoluteUrl(urlRoot)) {
+	// 		root = urlRoot;
+	// 	} else {
+	// 		root = joinUrlChunks(backendRoot, urlRoot);
+	// 	}
+	// } else {
+	// 	root = backendRoot;
+	// }
+
+	// if (!ownUrl) {
+	// 	return joinUrlChunks(root, optionsUrl);
+	// }
+
+	// return joinUrlChunks(root, ownUrl, optionsUrl);
+
+	// let url = joinUrlChunks(rootUrl, ownUrl, optionsUrl);
+	// if (!isAbsoluteUrl(url)) { 
+	// 	throw new Error('url must be an absolute url: ' + url);
+	// }
+
+	// return url;
 }
 
 function isAbsoluteUrl(url) {
@@ -133,4 +229,19 @@ function joinUrlChunks(...chunks) {
 		return url;
 	}, '');
 	return url;
+}
+
+
+function normalizeBody(options) {
+	let { body, attrs, data } = options;
+	let arg = body || data || attrs;
+	if (arg) {
+		return typeof arg === 'string' ? arg : JSON.stringify(arg);
+	}
+}
+
+function normalizeHeaders(backend, options) {
+		const { headers = {}, replaceHeaders } = options;
+		const actualHeaders = replaceHeaders ? headers : Object.assign({}, backend.headers, headers);
+		return actualHeaders;
 }

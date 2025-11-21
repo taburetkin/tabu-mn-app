@@ -6,13 +6,15 @@ import { modals, requestApi } from './api/index.js';
 export const App = AppObject.extend({
 
 	constructor: function() {
-		this.pages = [];
+		this.pages = {};
 		this._tasks = [];
 		AppObject.apply(this, arguments);
+		console.warn('[app]', this);
 	},
 
 	registerPage(page) {
 		if (!page) { return; }
+		this.pages[page.id] = page;
 		routes.register(page.route, this.processRequest.bind(this, page));
 		this.registerPages(page.children);
 	},
@@ -24,11 +26,8 @@ export const App = AppObject.extend({
 	},
 
 	async processRequest(page, args, request) {
-		let result = await this.stopPageAsync(request.page);
-		if (!result.ok) { this.triggerMethod('stop:page:fail', request.page, result.value) }
-		
-		result = await this.startPageAsync(page, args);
-		if (!result.ok) { this.triggerMethod('start:page:fail', request.page, result.value) }
+		await this.stopPageAsync(request.page);
+		await this.startPageAsync(page, args);
 	},
 
 
@@ -41,6 +40,8 @@ export const App = AppObject.extend({
 		const res = await page.stopAsync();
 		if (res.ok) {
 			this.triggerMethod('stop:page', page, res.value)
+		} else {
+			this.triggerMethod('stop:page:fail', page, res.value) 
 		}
 		return res;
 	},
@@ -52,12 +53,14 @@ export const App = AppObject.extend({
 			this.triggerMethod('before:start:page', page, args);
 			let res = await page.startAsync(args);
 			if (res.ok) {
-
-				this.triggerMethod('start:page', page, res.value)			
+				this.triggerMethod('start:page', page, res.value);	
+			} else {
+				this.triggerMethod('start:page:fail', page, res.value);
 			}
 			return res;
 		} catch (exc) {
 			console.error(exc);
+			this.triggerMethod('start:page:fail', page, exc);
 			return errResult(exc);
 		}
 	},

@@ -1,21 +1,25 @@
 import { asyncCall, errResult, okResult } from "./async";
+import { invokeValue } from "./vendors.js";
 
 export const http = {
 
 	async sendRequest(options) {
-		console.warn('sendRequest', options);
+		console.warn('send request', options);
 
-		let { url, parseResponse = 'json', method, headers, mode, noCors } = options;
+		let { url, parseResponse = 'json', method, headers, mode, noCors, body } = options;
 		if (!mode && !noCors) {
 			mode = 'cors';
 		}
+
 		const sendOptions = {
-			method, headers, mode
+			method, headers, mode, body
 		}
+
 		try {
 			const response = await fetch(url, sendOptions);
+			
 			if (!response.ok) {
-				return notOkResponse(response);
+				return await notOkResponse(response);
 			}
 			let result;
 			if (parseResponse) {
@@ -40,18 +44,27 @@ export const http = {
 	
 	async sendAsync(options) {
 		ensureOptions(options);
-		const { success, fail, always } = options;
-		const res = await asyncCall(() => this.sendRequest(options));
-		if (res.ok && typeof success === 'function') {
-			success(res.value);
-		}
-		else if (!res.ok && typeof fail === 'function') {
-			fail(res.value);
+		const { onSuccess, onFail, beforeRequest, afterRequest, args } = options;
+
+		const callOptions = {
+			onSuccess, onFail,
+			beforeAction: beforeRequest,
+			afterAction: afterRequest,
+			args
 		}
 
-		if (typeof always === 'function') {
-			always(res.value);
-		}
+		//invokeValueEnsure(beforeRequest, null, options);
+
+		const res = await asyncCall(() => this.sendRequest(options), callOptions);
+
+		// if (res.ok) {
+		// 	invokeValueEnsure(onSuccess, null, res.value);
+		// }
+		// else {
+		// 	invokeValueEnsure(onFail, null, res.value);
+		// }
+
+		// invokeValueEnsure(afterRequest, null, res.value);
 
 		return res;
 	},
@@ -68,12 +81,25 @@ function ensureOptions(options) {
 	}
 }
 
-function notOkResponse(resp) {
-	console.error(resp);
-	const { status, statusText } = resp;
+async function notOkResponse(response) {
+
+	console.error('notOkRes', response);
+
+	const json = await response.json();
+	if (json) { return errResult(json); }
+
+	const { status, statusText  } = resp;
 	const error = {
 		status, 
 		message: statusText
 	}
 	return errResult(error);
 }
+
+// function invokeValueEnsure(callback, context, args) {
+// 	try {
+// 		invokeValue(callback, context, args);
+// 	} catch (err) {
+// 		console.error(err);
+// 	}
+// }

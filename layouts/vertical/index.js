@@ -14,11 +14,20 @@ const Layout = View.extend({
 		section: Content,
 		footer: Footer
 	},
+	childViewOptions() {
+		const { failedPage, contentToShow } = this;
+		return { failedPage, contentToShow };
+	},
 	onStartPage() {
+		delete this.failedPage;
+		delete this.contentToShow;
 		this.render();
 	},
-	onStartPageFail(exc) {
-		console.error(exc);
+	onStartPageFail(failedPage, contentToShow) {
+		this.failedPage = failedPage;
+		this.contentToShow = contentToShow;
+		console.log('--------> ', contentToShow)
+		this.render();
 	}
 });
 

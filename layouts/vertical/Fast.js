@@ -1,6 +1,10 @@
 import { singleSelectMixin } from '../../api/collection/singleSelectMixin.js';
+import { claimsApi } from '../../api/index.js';
 import { ButtonView } from '../../ButtonView.js';
-import { View, CollectionView, Collection } from '../../vendors.js';
+import { View, CollectionView, Collection, smartNavigate } from '../../vendors.js';
+import { actorClaims } from '../../singletons/actorClaims.js';
+import { pagesLinks } from '../../singletons/pagesLinks.js';
+import { actorInfo } from '../../singletons/actorInfo.js';
 
 const SelectCollection = Collection.extend({
 	...singleSelectMixin,
@@ -19,10 +23,14 @@ const Group = View.extend({
 const SignButton = ButtonView.extend({
 	className: 'sign-btn default',
 	icon: 'fa:sign-in',
-	text: 'войти'
+	text: 'войти',
+	action() {
+		console.log('????', pagesLinks.login);
+		return smartNavigate(pagesLinks.login);
+	}
 });
 
-const Account = View.extend({
+const Anonymous = View.extend({
 	className: 'element',
 	template: 'Вход не выполнен',
 	children: [
@@ -30,10 +38,23 @@ const Account = View.extend({
 	]
 });
 
+const Account = View.extend({
+	className: 'element',
+	template: '<a href="<%= profilePage %>"><%= displayName %></a>',
+	initialize() {
+		this.model = actorInfo;
+	},
+	templateContext() {
+		return {
+			profilePage: pagesLinks.profile
+		}
+	}
+});
+
 const Info = Group.extend({
 	name: 'аккаунт',
 	children: [
-		Account
+		v => isAuthorized() ? Account : Anonymous
 	]
 });
 
@@ -55,7 +76,7 @@ const App = Group.extend({
 		},
 		
 	]
-})
+});
 
 const SearchItem = View.extend({
 	className: 'element',
@@ -121,21 +142,19 @@ const Search = Group.extend({
 	]
 });
 
-const Buttons = Group.extend({
 
-});
 
 export const Fast = View.extend({
 	className: 'fast-container',
 	children: [
 		Info,
-		Search,
-		Links,
+		v => isAuthorized() && Search,
+		v => isAuthorized() && Links,
 		App,
-		// SearchRealty,
-		// SearchProcess,
-		// SearchClient,
-		// SingInOutButton,
-		// ClearButton,
-	]
+	],
 });
+
+
+function isAuthorized() {
+	return claimsApi.has(actorClaims.getClaims(), { authorized: true });
+}

@@ -33,9 +33,9 @@ export const InputView = View.extend({
 			type: this.getInputType(),
 		}
 		attrs.value = this.schemaValue();
-		const autofill = this.schemaGet('inputAutocomplete');
-		if (autofill) {
-			attrs.autocomplete = true;
+		const autocomplete = this.schemaGet('inputAutocomplete');
+		if (autocomplete) {
+			attrs.autocomplete = autocomplete;
 		}		
 		let text = ' ' + Object.keys(attrs).filter(f => attrs[f] != null).map(key => `${key}="${attrs[key] === true ? key : attrs[key]}"`).join(' ');
 		return text;

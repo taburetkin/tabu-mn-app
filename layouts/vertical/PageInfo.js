@@ -6,6 +6,7 @@ import { AppInfo } from './AppInfo.js';
 import { AppNav } from './AppNav.js';
 import { Fast } from './Fast.js';
 import { singleSelectMixin } from '../../api/collection/singleSelectMixin.js';
+import { actorClaims } from '../../singletons/actorClaims.js';
 
 
 const predefinedTabs = {
@@ -94,6 +95,7 @@ export const PageInfo = View.extend({
 		const models = this.getTriggersModels();
 		this.triggersCollection = new TriggersCollection(models);
 		this.triggersCollection.initializeActiveTab();
+		console.warn(actorClaims.attributes);
 	},
 	getTriggersModels() {
 		const models = [

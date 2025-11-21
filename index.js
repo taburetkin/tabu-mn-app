@@ -8,6 +8,8 @@ export * from './utils/index.js';
 
 export {
 	actorClaims,
+	actorInfo,
+	pagesLinks,
 	viewport,
 	bodyClass
 } from './singletons/index.js'

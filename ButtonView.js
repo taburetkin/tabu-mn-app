@@ -6,30 +6,44 @@ import { invokeProp } from '../tabu-mn/utils/invokeValue.js';
 
 const actionButtonMixin = {
 	...asyncMixin,
+	initializeButton() {
+		const buttonType = this.getOption('buttonType', true);
+		this.setButtonType(buttonType);
+		const action = this.getOption('action', false);
+		this.setAction(action);
+	},
+
+	setButtonType(type) {
+		this._setAttributes({ type });
+	},
+
+
 	setAction(actionCb) {
 		this._action = actionCb;
 	},
 
 	async takeActionAsync(event) {
 
-		if (!this.isActionAllowed()) { console.warn('button is not iddle or disabled, action wont taked'); }
+		if (!this.isActionAllowed()) { 
+			console.warn('button is not iddle or disabled, action wont taked'); 
+			return;
+		}
 
 		this._setWaiting();
-		const buttonName = this.getOption('name', true);
-		this.triggerMethod('before:action', buttonName);
+		//const buttonName = this.getOption('name', true);
+		this.triggerMethod('before:action', this, event);
 
-		const res = await this.asyncResult(() => invokeProp(this, '_action', this, [event]));
-		
-		this.triggerMethod('after:action', buttonName, res);
+		const asyncActionOptions = this.getOption('asyncActionOptions', true);
+		const res = await this.asyncResult(() => invokeProp(this, '_action', this, [event, this]), asyncActionOptions);
+		console.log('[BUTTON:]', res);
+		this.triggerMethod('after:action', this, event, res);
 
 		this._setIdle();
 
 		if (res.ok) {
-			console.log('-button-action-success-', res.value);
-			this.triggerMethod('action:success', this, res.value);
+			this.triggerMethod('action:success', this, event, res.value);
 		} else {
-			console.log('-button-action-fail-', res.value);
-			this.triggerMethod('action:fail', this, res.value);
+			this.triggerMethod('action:fail', this, event, res.value);
 		}
 	},
 
@@ -77,6 +91,10 @@ export const ButtonView = View.extend({
 		}
 	},
 
+	initialize() {
+		this.initializeButton();
+	},
+
 	_iconHtml() {
 		const html = this.getIconHtml();
 		return html || '';
@@ -93,6 +111,9 @@ export const ButtonView = View.extend({
 	events: {
 		click(event) {
 			event.stopPropagation();
+			if (this.getOption('preventDefault', true)) {
+				event.preventDefault();
+			}
 			this.takeActionAsync(event);
 		}
 	}

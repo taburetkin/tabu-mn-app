@@ -14,10 +14,9 @@ export const ModalMessageView = View.extend({
 		const resolve = this._getButton('resolveButton', { className: 'resolve', onActionSuccess: (value) => this.triggerMethod('modal:resolve', value) });
 		const reject = this._getButton('rejectButton', { className: 'reject', onActionSuccess: (value) => this.triggerMethod('modal:reject', value) });
 		const views = [
-			resolve, reject,
-			{ class: ButtonView, text: 'test' }
+			resolve, reject
 		];
-		console.warn('modal message children', views);
+		console.warn('modal message children', views, this);
 		return views;
 	},
 	_getButton(key, ext) {

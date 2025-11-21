@@ -32,6 +32,10 @@ export function hasClaims(actor, expected) {
 }
 
 function hasClaimValue(actor, key, expectedValue) {
+	console.warn(' ', {actor, key, expectedValue})
+	if (key === 'svcAdminModule') {
+		//debugger;
+	}
 	if (Array.isArray(expectedValue)) {
 		let isAll = isAllMethod(expectedValue) ? true : false;
 		let isAny = !isAll;
@@ -41,8 +45,15 @@ function hasClaimValue(actor, key, expectedValue) {
 		}
 		return isAll;
 	}
+
+	if (typeof expectedValue === 'string' && actor[key + '.' + expectedValue]) {
+		return true;
+	}
+
 	let keyExist = key in actor;
+
 	let actorValue = actor[key];
+
 	let result = expectedValue ? actorValue === expectedValue 
 										: keyExist ? actorValue === expectedValue 
 														: true;

@@ -140,10 +140,13 @@ export const Page = AppObject.extend({
 		return u;
 	},
 
-	getUrl(args) {
+	getUrl(args, { force } = {}) {
 		const error = this.getClaimsError('navigate');
-		if (error) {
+		if (!force && error) {
 			console.error(error);
+			return null;
+		}
+		if (!force && this.getOption('isHidden', true)) {
 			return null;
 		}
 		const u = this._getUrl(args);
@@ -152,8 +155,8 @@ export const Page = AppObject.extend({
 		}
 	},
 	
-	getLink(args) {
-		let url = this.getUrl(args);
+	getLink(args, options) {
+		let url = this.getUrl(args, options);
 		if (url == null) return;
 		
 		const isRequested = requestApi.isRequested(this);
@@ -204,6 +207,8 @@ export const Page = AppObject.extend({
 		const res = await this._beforeStartAsync();
 		if (res.ok) {
 			this.triggerMethod('start', this, args);
+		} else {
+			this.triggerMethod('start:fail', this, res.value);
 		}
 		return res;
 	},
@@ -222,7 +227,13 @@ export const Page = AppObject.extend({
 		const claimsIsOk = claimsApi.has(userClaims, expectedClaims);
 		if (!claimsIsOk) {
 			purpose = purpose || 'start';
-			return this.getOption(purpose + 'ClaimsErrorMessage', true) || 'not enough rights';
+			let error = this.getOption(purpose + 'ClaimsErrorMessage', true);
+			if (error) { return error; }
+			if (userClaims.authorized || userClaims.authenticated) {
+				return 'forbidden';
+			} else {
+				return 'notAuthorized';
+			}
 		}
 	},
 
