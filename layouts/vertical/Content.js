@@ -29,7 +29,18 @@ export default View.extend({
 	childViewOptions() {
 		return this.getOption('contentOptions', true);
 	},
-	children() {
+	getPageContent() {
+		if (!request.page) { return; }
+
+		const page = request.page;
+		const content = page.getOption('content', true);
+		if (!content) { return; }
+		if (Array.isArray(content)) {
+			return content.length ? content : undefined;
+		}
+		
+	},
+	children() { 
 		const failed = this.getOptions(['failedPage', 'contentToShow' ]);
 		if (failed.failedPage && failed.contentToShow) {
 			return [failed.contentToShow];

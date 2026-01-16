@@ -198,6 +198,7 @@ export const Page = AppObject.extend({
 
 		let res;
 		res = await this.asyncResult(() => this.beforeStart(args));
+		console.error('before start', res)
 		if (!res.ok) { return res; }
 		res = await this.triggerMethodAsync('before:start', this, args);
 		return res;

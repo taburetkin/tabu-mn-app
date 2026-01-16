@@ -16,8 +16,14 @@ const Layout = View.extend({
 	},
 	childViewOptions() {
 		const { failedPage, contentToShow } = this;
-		return { failedPage, contentToShow };
+		return { failedPage, contentToShow, contentOptions: this.getOption('contentOptions', true) };
 	},
+	// sectionOptions() {
+	// 	debugger
+	// 	return {
+	// 		contentOptions: this.getOption('contentOptions', true)
+	// 	}
+	// },
 	onStartPage() {
 		delete this.failedPage;
 		delete this.contentToShow;

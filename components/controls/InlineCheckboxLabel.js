@@ -9,7 +9,6 @@ export const InlineCheckboxLabel = View.extend({
 	template: `<label class="wrapper"><span class="input-container"><input type="checkbox" name="<%= id %>" <%= checked %>></span><span class="text"><%= label %></span></label>`,
 	initialize() {
 		this.initializeControl();
-		console.log(this.el);
 	},
 	events: {
 		'change input'(e) {

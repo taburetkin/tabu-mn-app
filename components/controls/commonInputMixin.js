@@ -81,7 +81,9 @@ export const commonInputMixin = {
 
 	},
 	getInputType() {
-
+		if (this.hasOption('inputType')) {
+			return this.getOption('inputType', true);
+		}
 		let res = this.schemaGet('inputType');
 		if (res != null) {
 			return res;

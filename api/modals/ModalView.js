@@ -93,6 +93,7 @@ export const ModalView = View.extend({
 	},
 
 	isExternalElement(el) {
+		
 		if (!this.el.contains(el)) { return true; }
 		if (this.noBg) {
 			return this.el === el;

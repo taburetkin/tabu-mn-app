@@ -44,6 +44,9 @@ export const InputView = View.extend({
 	// 	return valueSchemaApi.inputType(this.valueSchema, this.schemaData);
 	// },
 	getInputName() {
+		if (this.hasOption('inputName')) {
+			return this.getOption('inputName', true);
+		}
 		return valueSchemaApi.inputName(this.valueSchema, this.schemaData);
 	},
 

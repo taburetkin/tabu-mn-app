@@ -17,7 +17,6 @@ export const SubmitFormContainerView = View.extend({
 	parentShouldTriggerSetup: true,
 	...schemaApiViewMixin,
 	initialize() {
-		//this.on('all', e => console.error('[buttons]',e));
 		this.initializeSchemaData();		
 	},
 	children() {

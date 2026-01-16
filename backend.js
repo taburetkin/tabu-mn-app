@@ -90,13 +90,16 @@ export const entityBackendMixin = {
 		return options;
 	},
 
-	async fetchAsync(options) { 
+	async fetchAsync(options = {}) { 
 		const method = this.fetchMethod;
 		options = Object.assign({ method, operation: 'fetch' }, options);
 		const result = await this.sendAsync(options);
 		console.warn('fetch result', result);
 		if (result.ok) {
-			this.set(result.value);
+			let { setOnFetchOptions } = options;
+			setOnFetchOptions = setOnFetchOptions || invokeValue(this.setOnFetchOptions, this, [this, options]);
+			this.set(result.value, setOnFetchOptions);
+			this.trigger('sync', this);
 		}
 		return result;
 	},

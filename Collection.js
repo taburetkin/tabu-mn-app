@@ -2,5 +2,6 @@ import { entityBackendMixin } from './backend.js';
 import { Collection as _Collection } from './vendors.js';
 
 export const Collection = _Collection.extend({
-	...entityBackendMixin
+	...entityBackendMixin,
+	setOnFetchOptions: { parse: true, add: true, merge: true, remove: true }
 });
