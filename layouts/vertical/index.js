@@ -32,7 +32,6 @@ const Layout = View.extend({
 	onStartPageFail(failedPage, contentToShow) {
 		this.failedPage = failedPage;
 		this.contentToShow = contentToShow;
-		console.log('--------> ', contentToShow)
 		this.render();
 	}
 });

@@ -1,4 +1,4 @@
-import { Model } from 'core';
+import { Model } from '../../../vendors.js';
 import { operatorsCollection } from './operators';
 import { getTypeDefaultOperator, isNumeric } from './types';
 

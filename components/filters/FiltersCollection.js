@@ -1,4 +1,4 @@
-import { Collection } from 'core';
+import { Collection } from '../../vendors.js';
 import { FilterItemModel } from './filter-item/FilterItemModel';
 import { errResult, okResult } from '../../async';
 export const FiltersCollection = Collection.extend({
